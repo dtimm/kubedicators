@@ -1,0 +1,49 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels: 
+    run: registry
+  name: registry
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: registry
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: registry
+    spec:
+      containers:
+      - image: davidtimm/cf-indicators:dev
+        imagePullPolicy: IfNotPresent
+        name: registry
+        ports:
+        - containerPort: 10567
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: registry
+  name: registry
+  namespace: default
+spec:
+  ports: 
+  - port: 80
+    protocol: TCP
+    targetPort: 10567
+  selector: 
+    run: registry
+  sessionAffinity: None
+  type: LoadBalancer
