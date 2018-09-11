@@ -1,10 +1,9 @@
-FROM golang:1.10.2 AS build
+FROM golang:1.11 AS build
 
-RUN go get golang.org/x/vgo
-RUN go get code.cloudfoundry.org/cf-indicators/...
-WORKDIR $GOPATH/src/code.cloudfoundry.org/cf-indicators/
+RUN go get code.cloudfoundry.org/indicators/...
+WORKDIR $GOPATH/src/code.cloudfoundry.org/indicators/
 
-RUN CGO_ENABLED=0 vgo build -o /registry code.cloudfoundry.org/cf-indicators/cmd/registry
+RUN GO111MODULE=on CGO_ENABLED=0 go build -mod=vendor -o /registry cmd/registry/main.go
 
 FROM alpine
 
