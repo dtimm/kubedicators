@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - image: davidtimm/cf-indicators:dev
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         name: registry
         ports:
         - containerPort: 10567
