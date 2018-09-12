@@ -1,0 +1,36 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels: 
+    run: registryagent
+  name: registryagent
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: registryagent
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: registryagent
+    spec:
+      containers:
+      - image: davidtimm/cf-indicators:dev
+        imagePullPolicy: Always
+        name: registryagent
+        command: ["/bin/registry_agent", "--registry", "http://default.registry", "--deployment", "test-depl", "--interval", "5s", "--documents-glob", "/data/indicators/*.yml"]
+        volumeMounts:
+        - name: indicator-storage
+          mountPath: /data/indicators
+      volumes:
+      - name: indicator-storage
+        emptyDir: {}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
